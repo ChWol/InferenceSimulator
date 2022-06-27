@@ -57,7 +57,7 @@ args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'gpu', 'ngpu', 'debug'])
 
 wandb.init(project="inference=" + "cifar10".upper(), config=args, entity='duke-tum')
-wandb.run.name = args.network + ": " + wandb.run.id
+wandb.run.name = args.model + ": " + wandb.run.id
 
 misc.logger.init(args.logdir, 'test_log' + current_time)
 logger = misc.logger.info
