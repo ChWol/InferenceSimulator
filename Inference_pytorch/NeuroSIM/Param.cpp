@@ -98,7 +98,8 @@ Param::Param() {
 	                            // true: sar ADC
 	currentMode = true;         // false: MLSA use VSA
 	                            // true: MLSA use CSA
-	
+
+	// IMPORTANT: Think of changing main.cpp summaryfile and layerfile
 	pipeline = false;            // false: layer-by-layer process --> huge leakage energy in HP
 								// true: pipeline process
 	speedUpDegree = 8;          // 1 = no speed up --> original speed
@@ -108,7 +109,8 @@ Param::Param() {
 	
 	validated = true;			// false: no calibration factors
 								// true: validated by silicon data (wiring area in layout, gate switching activity, post-layout performance drop...)
-								
+
+	// IMPORTANT: If you change this, think of changing the summary.csv file in main.cpp
 	synchronous = true;			// false: asynchronous
 								// true: synchronous, clkFreq will be decided by sensing delay
 								

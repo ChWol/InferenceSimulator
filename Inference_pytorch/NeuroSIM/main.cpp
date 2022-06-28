@@ -276,6 +276,16 @@ int main(int argc, char * argv[]) {
 
 	cout << "-------------------------------------- Hardware Performance --------------------------------------" <<  endl;	
 	if (! param->pipeline) {
+	    ofstream layerfile;
+        layerfile.open("Layer.csv", ios::out);
+        layerfile << "# of Tiles, Speed-up, Utilization, Read Latency (ns), Read Dynamic Energy (pJ), Leakage Power (uW), " <<
+        "Leakage Energy (pJ), Buffer Latency (ns), Buffer Read Dynamic Energy (pJ), IC Latency (ns), IC Read Dynamic Energy (ns), " <<
+        "ADC Read Latency (ns), Accumulation Circuits Read Latency (ns), Other Peripheries Read Latency (ns), " <<
+        "ADC Read Dynamic Energy (pJ), Accumulation Circuits Read Dynamic Energy (pJ), Other Peripheries Read Dynamic Energy (pJ)" << endl;
+        layerfile << numTileEachLayer[0][i] * numTileEachLayer[1][i] << ", ";
+        layerfile << speedUpEachLayer[0][i] * speedUpEachLayer[1][i] << ", ";
+        layerfile << utilizationEachLayer[i][0] << ", ";
+
 		// layer-by-layer process
 		// show the detailed hardware performance for each layer
 		for (int i=0; i<netStructure.size(); i++) {
@@ -305,24 +315,38 @@ int main(int argc, char * argv[]) {
 			layerLeakageEnergy = numTileOtherLayer*layerReadLatency*tileLeakage;
 			
 			cout << "layer" << i+1 << "'s readLatency is: " << layerReadLatency*1e9 << "ns" << endl;
+			layerfile << replace << ", ";
 			cout << "layer" << i+1 << "'s readDynamicEnergy is: " << layerReadDynamicEnergy*1e12 << "pJ" << endl;
+			layerfile << replace << ", ";
 			cout << "layer" << i+1 << "'s leakagePower is: " << numTileEachLayer[0][i] * numTileEachLayer[1][i] * tileLeakage*1e6 << "uW" << endl;
+			layerfile << replace << ", ";
 			cout << "layer" << i+1 << "'s leakageEnergy is: " << layerLeakageEnergy*1e12 << "pJ" << endl;
+			layerfile << replace << ", ";
 			cout << "layer" << i+1 << "'s buffer latency is: " << layerbufferLatency*1e9 << "ns" << endl;
+			layerfile << replace << ", ";
 			cout << "layer" << i+1 << "'s buffer readDynamicEnergy is: " << layerbufferDynamicEnergy*1e12 << "pJ" << endl;
+			layerfile << replace << ", ";
 			cout << "layer" << i+1 << "'s ic latency is: " << layericLatency*1e9 << "ns" << endl;
+			layerfile << replace << ", ";
 			cout << "layer" << i+1 << "'s ic readDynamicEnergy is: " << layericDynamicEnergy*1e12 << "pJ" << endl;
+			layerfile << replace << ", ";
 			
 			
 			cout << endl;
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
 			cout << "----------- ADC (or S/As and precharger for SRAM) readLatency is : " << coreLatencyADC*1e9 << "ns" << endl;
+			layerfile << replace << ", ";
 			cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readLatency is : " << coreLatencyAccum*1e9 << "ns" << endl;
+			layerfile << replace << ", ";
 			cout << "----------- Other Peripheries (e.g. decoders, mux, switchmatrix, buffers, IC, pooling and activation units) readLatency is : " << coreLatencyOther*1e9 << "ns" << endl;
+			layerfile << replace << ", ";
 			cout << "----------- ADC (or S/As and precharger for SRAM) readDynamicEnergy is : " << coreEnergyADC*1e12 << "pJ" << endl;
+			layerfile << replace << ", ";
 			cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readDynamicEnergy is : " << coreEnergyAccum*1e12 << "pJ" << endl;
+			layerfile << replace << ", ";
 			cout << "----------- Other Peripheries (e.g. decoders, mux, switchmatrix, buffers, IC, pooling and activation units) readDynamicEnergy is : " << coreEnergyOther*1e12 << "pJ" << endl;
+			layerfile << replace << endl;
 			cout << endl;
 			cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 			cout << endl;
@@ -343,6 +367,7 @@ int main(int argc, char * argv[]) {
 			chipEnergyAccum += coreEnergyAccum;
 			chipEnergyOther += coreEnergyOther;
 		}
+		layerfile.close()
 	} else {
 		// pipeline system
 		// firstly define system clock
@@ -440,26 +465,51 @@ int main(int argc, char * argv[]) {
 		}
 		
 	}
+
+	ofstream summaryfile;
+    summaryfile.open("Summary.csv", ios::out);
+    summaryfile << "Memory Utilization (%), ChipArea (um^2), Chip total CIM array (um^2), Total IC Area on chip (um^2), Total ADC Area on chip (um^2I), " <<
+    "Total Accumulation Circuits on chip (um^2), Other Peripheries (um^2), Chip layer-by-layer readLatency (ns), " <<
+    "Chip total readDynamicEnergy (pJ), Chip total leakage Energy (pJ), Chip total leakage Power (uW), Chip buffer readLatency (ns), " <<
+    "Chip buffer readDynamicEnergy (pJ), Chip ic readLatency (ns), Chip ic readDynamicEnergy (pJ), ADC readLatency (ns), " <<
+    "Accumulation Circuits readLatency (ns), Other Peripheries readLatency (ns), ADC readDynamicEnergy (pJ), " <<
+    "Accumulation Circuits readDynamicEnergy (pJ), Other Peripheries readDynamicEnergy (pJ), Energy Efficiency TOPS/W, " <<
+    "Throughput TOPS, Throughput FPS, Compute efficiency TOPS/mm^2" << endl;
+    summaryfile << realMappedMemory/totalNumTile*100 << ", ";
 	
 	cout << "------------------------------ Summary --------------------------------" <<  endl;
 	cout << endl;
 	cout << "ChipArea : " << chipArea*1e12 << "um^2" << endl;
+	summaryfile << chipArea*1e12 << ",";
 	cout << "Chip total CIM array : " << chipAreaArray*1e12 << "um^2" << endl;
+	summaryfile << chipAreaArray*1e12 << ",";
 	cout << "Total IC Area on chip (Global and Tile/PE local): " << chipAreaIC*1e12 << "um^2" << endl;
+	summaryfile << chipAreaIC*1e12 << ",";
 	cout << "Total ADC (or S/As and precharger for SRAM) Area on chip : " << chipAreaADC*1e12 << "um^2" << endl;
+	summaryfile << chipAreaADC*1e12 << ",";
 	cout << "Total Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) on chip : " << chipAreaAccum*1e12 << "um^2" << endl;
+	summaryfile << chipAreaAccum*1e12 << ",";
 	cout << "Other Peripheries (e.g. decoders, mux, switchmatrix, buffers, pooling and activation units) : " << chipAreaOther*1e12 << "um^2" << endl;
+	summaryfile << chipAreaOther*1e12 << ",";
 	cout << endl;
 	if (! param->pipeline) {
 		if (param->synchronous) cout << "Chip clock period is: " << clkPeriod*1e9 << "ns" <<endl;
 		cout << "Chip layer-by-layer readLatency (per image) is: " << chipReadLatency*1e9 << "ns" << endl;
+		summaryfile << chipReadLatency*1e9 << ",";
 		cout << "Chip total readDynamicEnergy is: " << chipReadDynamicEnergy*1e12 << "pJ" << endl;
+		summaryfile << chipReadDynamicEnergy*1e12 << ",";
 		cout << "Chip total leakage Energy is: " << chipLeakageEnergy*1e12 << "pJ" << endl;
+		summaryfile << chipLeakageEnergy*1e12 << ",";
 		cout << "Chip total leakage Power is: " << chipLeakage*1e6 << "uW" << endl;
+		summaryfile << chipLeakage*1e6 << ",";
 		cout << "Chip buffer readLatency is: " << chipbufferLatency*1e9 << "ns" << endl;
+		summaryfile << chipbufferLatency*1e9 << ",";
 		cout << "Chip buffer readDynamicEnergy is: " << chipbufferReadDynamicEnergy*1e12 << "pJ" << endl;
+		summaryfile << chipbufferReadDynamicEnergy*1e12 << ",";
 		cout << "Chip ic readLatency is: " << chipicLatency*1e9 << "ns" << endl;
+		summaryfile << chipicLatency*1e9 << ",";
 		cout << "Chip ic readDynamicEnergy is: " << chipicReadDynamicEnergy*1e12 << "pJ" << endl;
+		summaryfile << chipicReadDynamicEnergy*1e12 << ",";
 	} else {
 		if (param->synchronous) cout << "Chip clock period is: " << clkPeriod*1e9 << "ns" <<endl;
 		cout << "Chip pipeline-system-clock-cycle (per image) is: " << chipReadLatency*1e9 << "ns" << endl;
@@ -476,11 +526,17 @@ int main(int argc, char * argv[]) {
 	cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 	cout << endl;
 	cout << "----------- ADC (or S/As and precharger for SRAM) readLatency is : " << chipLatencyADC*1e9 << "ns" << endl;
+	summaryfile << chipLatencyADC*1e9 << ",";
 	cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readLatency is : " << chipLatencyAccum*1e9 << "ns" << endl;
+	summaryfile << chipLatencyAccum*1e9 << ",";
 	cout << "----------- Other Peripheries (e.g. decoders, mux, switchmatrix, buffers, IC, pooling and activation units) readLatency is : " << chipLatencyOther*1e9 << "ns" << endl;
+	summaryfile << chipLatencyOther*1e9 << ",";
 	cout << "----------- ADC (or S/As and precharger for SRAM) readDynamicEnergy is : " << chipEnergyADC*1e12 << "pJ" << endl;
+	summaryfile << chipEnergyADC*1e12 << ",";
 	cout << "----------- Accumulation Circuits (subarray level: adders, shiftAdds; PE/Tile/Global level: accumulation units) readDynamicEnergy is : " << chipEnergyAccum*1e12 << "pJ" << endl;
+	summaryfile << chipEnergyAccum*1e12 << ",";
 	cout << "----------- Other Peripheries (e.g. decoders, mux, switchmatrix, buffers, IC, pooling and activation units) readDynamicEnergy is : " << chipEnergyOther*1e12 << "pJ" << endl;
+	summaryfile << chipEnergyOther*1e12 << ",";
 	cout << endl;
 	cout << "************************ Breakdown of Latency and Dynamic Energy *************************" << endl;
 	cout << endl;
@@ -490,12 +546,17 @@ int main(int argc, char * argv[]) {
 	if (! param->pipeline) {
 		if(param->validated){
 			cout << "Energy Efficiency TOPS/W (Layer-by-Layer Process): " << numComputation/(chipReadDynamicEnergy*1e12+chipLeakageEnergy*1e12)/param->zeta << endl;	// post-layout energy increase, zeta = 1.23 by default
+		    summaryfile << numComputation/(chipReadDynamicEnergy*1e12+chipLeakageEnergy*1e12)/param->zeta << ",";
 		}else{
 			cout << "Energy Efficiency TOPS/W (Layer-by-Layer Process): " << numComputation/(chipReadDynamicEnergy*1e12+chipLeakageEnergy*1e12) << endl;
+		    summaryfile << numComputation/(chipReadDynamicEnergy*1e12+chipLeakageEnergy*1e12) << ",";
 		}
 		cout << "Throughput TOPS (Layer-by-Layer Process): " << numComputation/(chipReadLatency*1e12) << endl;
+		summaryfile << numComputation/(chipReadLatency*1e12) << ",";
 		cout << "Throughput FPS (Layer-by-Layer Process): " << 1/(chipReadLatency) << endl;
+		summaryfile << 1/(chipReadLatency) << ",";
 		cout << "Compute efficiency TOPS/mm^2 (Layer-by-Layer Process): " << numComputation/(chipReadLatency*1e12)/(chipArea*1e6) << endl;
+	    summaryfile << numComputation/(chipReadLatency*1e12)/(chipArea*1e6) << endl;
 	} else {
 		if(param->validated){
 			cout << "Energy Efficiency TOPS/W (Pipelined Process): " << numComputation/(chipReadDynamicEnergy*1e12+chipLeakageEnergy*1e12)/param->zeta << endl;	// post-layout energy increase, zeta = 1.23 by default
@@ -513,7 +574,7 @@ int main(int argc, char * argv[]) {
     cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
 	cout << "Total Run-time of NeuroSim: " << duration.count() << " seconds" << endl;
 	cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
-	
+	summaryfile.close()
 	return 0;
 }
 

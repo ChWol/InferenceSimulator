@@ -16,6 +16,8 @@ from utee import hook
 from datetime import datetime
 from subprocess import call
 import wandb
+import pandas as pd
+from decimal import Decimal
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--dataset', default='cifar10', help='cifar10|cifar100|imagenet')
@@ -56,7 +58,6 @@ parser.add_argument('--reLu', type=int, default=1)
 parser.add_argument('--technode', type=int, default=22)
 
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
-
 
 args = parser.parse_args()
 
@@ -170,3 +171,18 @@ logger('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
     test_loss, correct, len(test_loader.dataset), acc))
 
 call(["/bin/bash", './layer_record_' + str(args.model) + '/trace_command.sh'])
+
+log_input = {}
+layer_out = pd.read_csv("Layer.csv").to_dict()
+for key, value in layer_out.items():
+    for layer, result in value.items():
+        exponential = '%.2E' % Decimal(result)
+        log_input["Layer {}: {}".format(layer + 1, key)] = exponential
+wandb.log(log_input)
+log_input = {}
+summary_out = pd.read_csv("Summary.csv").to_dict()
+for key, value in summary_out.items():
+    exponential = '%.2E' % Decimal(value[0])
+    log_input[key] = exponential
+wandb.log(log_input)
+
