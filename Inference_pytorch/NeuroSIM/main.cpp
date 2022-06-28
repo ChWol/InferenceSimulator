@@ -282,13 +282,15 @@ int main(int argc, char * argv[]) {
         "Leakage Energy (pJ), Buffer Latency (ns), Buffer Read Dynamic Energy (pJ), IC Latency (ns), IC Read Dynamic Energy (ns), " <<
         "ADC Read Latency (ns), Accumulation Circuits Read Latency (ns), Other Peripheries Read Latency (ns), " <<
         "ADC Read Dynamic Energy (pJ), Accumulation Circuits Read Dynamic Energy (pJ), Other Peripheries Read Dynamic Energy (pJ)" << endl;
-        layerfile << numTileEachLayer[0][i] * numTileEachLayer[1][i] << ", ";
-        layerfile << speedUpEachLayer[0][i] * speedUpEachLayer[1][i] << ", ";
-        layerfile << utilizationEachLayer[i][0] << ", ";
+
 
 		// layer-by-layer process
 		// show the detailed hardware performance for each layer
 		for (int i=0; i<netStructure.size(); i++) {
+		    layerfile << numTileEachLayer[0][i] * numTileEachLayer[1][i] << ", ";
+            layerfile << speedUpEachLayer[0][i] * speedUpEachLayer[1][i] << ", ";
+            layerfile << utilizationEachLayer[i][0] << ", ";
+
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 
 			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[2*i+11], argv[2*i+11], argv[2*i+12], netStructure[i][6],
