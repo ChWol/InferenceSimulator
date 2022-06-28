@@ -369,7 +369,7 @@ int main(int argc, char * argv[]) {
 			chipEnergyAccum += coreEnergyAccum;
 			chipEnergyOther += coreEnergyOther;
 		}
-		layerfile.close()
+		layerfile.close();
 	} else {
 		// pipeline system
 		// firstly define system clock
@@ -576,7 +576,7 @@ int main(int argc, char * argv[]) {
     cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
 	cout << "Total Run-time of NeuroSim: " << duration.count() << " seconds" << endl;
 	cout << "------------------------------ Simulation Performance --------------------------------" <<  endl;
-	summaryfile.close()
+	summaryfile.close();
 	return 0;
 }
 
