@@ -176,13 +176,12 @@ log_input = {}
 layer_out = pd.read_csv("Layer.csv").to_dict()
 for key, value in layer_out.items():
     for layer, result in value.items():
-        exponential = '%.2E' % Decimal(result)
-        log_input["Layer {}: {}".format(layer + 1, key)] = exponential
+        log_input["Layer {}: {}".format(layer + 1, key)] = result
 wandb.log(log_input)
 log_input = {}
 summary_out = pd.read_csv("Summary.csv").to_dict()
 for key, value in summary_out.items():
     exponential = '%.2E' % Decimal(value[0])
-    log_input[key] = exponential
+    log_input[key] = value[0]
 wandb.log(log_input)
 
