@@ -71,12 +71,6 @@ DFF *bufferOutputCM;
 
 void ProcessingUnitInitialize(SubArray *& subArray, InputParameter& inputParameter, Technology& tech, MemCell& cell, int _numSubArrayRowNM, int _numSubArrayColNM, int _numSubArrayRowCM, int _numSubArrayColCM) {
 
-    cout << "Cell bit: " << param->cellBit << endl;
-    cout << "Technode: " << param->technode << endl;
-    cout << "reLu: " << param->reLu << endl;
-    cout << "memcelltype" << param->memcelltype << endl;
-    cout << "levelOutput: " << param->levelOutput << endl;
-    cout << "resitance: " << param->resistanceOff << endl;
 	/*** circuit level parameters ***/
 	switch(param->memcelltype) {
 		case 3:     cell.memCellType = Type::FeFET; break;
