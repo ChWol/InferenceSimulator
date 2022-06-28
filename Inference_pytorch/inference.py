@@ -49,7 +49,14 @@ parser.add_argument('--t', type=float, default=0, help='retention time')
 parser.add_argument('--v', type=float, default=0, help='drift coefficient')
 parser.add_argument('--detect', type=int, default=0, help='if 1, fixed-direction drift, if 0, random drift')
 parser.add_argument('--target', type=float, default=0, help='drift target for fixed-direction drift, range 0-1')
+
+########## Additional hardware parameters - no influence on frontend ##########
+parser.add_argument('--memcelltype', type=int, default=2)
+parser.add_argument('--reLu', type=int, default=1)
+parser.add_argument('--technode', type=int, default=22)
+
 current_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+
 
 args = parser.parse_args()
 
@@ -124,7 +131,9 @@ criterion = torch.nn.CrossEntropyLoss()
 # for data, target in test_loader:
 for i, (data, target) in enumerate(test_loader):
     if i == 0:
-        hook_handle_list = hook.hardware_evaluation(modelCF, args.wl_weight, args.wl_activate, args.model, args.mode)
+        hook_handle_list = hook.hardware_evaluation(modelCF, args.wl_weight, args.wl_activate, args.model, args.mode,
+                                                    args.cellBit, args.technode, args.reLu, args.memcelltype,
+                                                    2 ** args.ADCprecision, args.onoffratio, args.subArray)
     indx_target = target.clone()
     if args.cuda:
         data, target = data.cuda(), target.cuda()
@@ -140,7 +149,7 @@ for i, (data, target) in enumerate(test_loader):
 
 test_loss = test_loss / len(test_loader)  # average over number of mini-batch
 acc = 100. * correct / len(test_loader.dataset)
-wandb.log({'Test Accuracy': acc, 'Test Loss': test_loss})
+wandb.log({'Test Accuracy': acc, 'Test Loss': test_loss, 'Time': time.time()-t_begin})
 
 accuracy = acc.cpu().data.numpy()
 

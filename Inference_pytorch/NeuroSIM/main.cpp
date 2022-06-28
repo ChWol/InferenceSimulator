@@ -72,6 +72,26 @@ int main(int argc, char * argv[]) {
 	// define weight/input/memory precision from wrapper
 	param->synapseBit = atoi(argv[2]);              // precision of synapse weight
 	param->numBitInput = atoi(argv[3]);             // precision of input neural activation
+	param->cellBit = atoi(argv[4]);
+	param->technode = atoi(argv[5]);
+	switch(param->technode) {
+		case 7:	        param->wireWidth = 18; break;
+		case 10:	    param->wireWidth = 18; break;
+		case 14:	    param->wireWidth = 25; break;
+		case 22:	    param->wireWidth = 40; break;
+		case 32:	    param->wireWidth = 56; break;
+		case 45:	    param->wireWidth = 80; break;
+		case 65:	    param->wireWidth = 105; break;
+		case 90:	    param->wireWidth = 110; break;
+		case 130:	    param->wireWidth = 175; break;
+	}
+	param->reLu = atoi(argv[6]);
+	param->memcelltype = atoi(argv[7]);
+	param->levelOutput = atoi(argv[8]);
+	param->resistanceOff = 6e3*atoi(argv[9]);
+
+	param->recalculate_Params(param->wireWidth, param->memcelltype, param->resistanceOff);
+
 	if (param->cellBit > param->synapseBit) {
 		cout << "ERROR!: Memory precision is even higher than synapse precision, please modify 'cellBit' in Param.cpp!" << endl;
 		param->cellBit = param->synapseBit;
@@ -240,7 +260,7 @@ int main(int argc, char * argv[]) {
 	if (param->synchronous){
 		// calculate clkFreq
 		for (int i=0; i<netStructure.size(); i++) {		
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[2*i+4], argv[2*i+4], argv[2*i+5], netStructure[i][6],
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[2*i+11], argv[2*i+11], argv[2*i+12], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerbufferLatency, &layerbufferDynamicEnergy, &layericLatency, &layericDynamicEnergy,
@@ -261,7 +281,7 @@ int main(int argc, char * argv[]) {
 		for (int i=0; i<netStructure.size(); i++) {
 			cout << "-------------------- Estimation of Layer " << i+1 << " ----------------------" << endl;
 
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[2*i+4], argv[2*i+4], argv[2*i+5], netStructure[i][6],
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[2*i+11], argv[2*i+11], argv[2*i+12], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerbufferLatency, &layerbufferDynamicEnergy, &layericLatency, &layericDynamicEnergy,
@@ -344,7 +364,7 @@ int main(int argc, char * argv[]) {
 		vector<double> coreEnergyOtherPerLayer;
 		
 		for (int i=0; i<netStructure.size(); i++) {
-			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[2*i+4], argv[2*i+4], argv[2*i+5], netStructure[i][6],
+			ChipCalculatePerformance(inputParameter, tech, cell, i, argv[2*i+11], argv[2*i+11], argv[2*i+12], netStructure[i][6],
 						netStructure, markNM, numTileEachLayer, utilizationEachLayer, speedUpEachLayer, tileLocaEachLayer,
 						numPENM, desiredPESizeNM, desiredTileSizeCM, desiredPESizeCM, CMTileheight, CMTilewidth, NMTileheight, NMTilewidth,
 						&layerReadLatency, &layerReadDynamicEnergy, &tileLeakage, &layerbufferLatency, &layerbufferDynamicEnergy, &layericLatency, &layericDynamicEnergy,
