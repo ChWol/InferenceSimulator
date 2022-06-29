@@ -99,7 +99,11 @@ cfg_list = {
 def vgg8(args, logger, pretrained=None):
     cfg = cfg_list['vgg8']
     layers = make_layers(cfg, args, logger)
-    model = VGG(args, layers, num_classes=10, logger=logger)
+    if args.dataset == 'cifar10':
+        classes = 10
+    else:
+        classes = 100
+    model = VGG(args, layers, num_classes=classes, logger=logger)
     if pretrained is not None:
         model.load_state_dict(torch.load(pretrained))
     return model
