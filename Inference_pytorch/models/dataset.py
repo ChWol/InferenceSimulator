@@ -70,7 +70,7 @@ def get_cifar100(batch_size, data_root='/tmp/public_dataset/pytorch', train=True
     return ds
 
 def get_imagenet(batch_size, data_root='/home/shimeng/Documents/Data', train=True, val=True, **kwargs):
-    # data_root = data_root
+    data_root = os.path.expanduser(os.path.join(data_root, 'imagenet'))
     num_workers = kwargs.setdefault('num_workers', 1)
     print("Building ImageNet data loader with {} workers".format(num_workers))
     
