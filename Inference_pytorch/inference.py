@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser(description='PyTorch CIFAR-X Example')
 parser.add_argument('--dataset', default='cifar10', help='cifar10|cifar100|imagenet')
 parser.add_argument('--model', default='VGG8', help='VGG8|DenseNet40|ResNet18')
 parser.add_argument('--mode', default='WAGE', help='WAGE|FP')
-parser.add_argument('--batch_size', type=int, default=500, help='input batch size for training (default: 64)')
+parser.add_argument('--batch_size', type=int, default=200, help='input batch size for training (default: 64)')
 parser.add_argument('--epochs', type=int, default=200, help='number of epochs to train (default: 10)')
 parser.add_argument('--grad_scale', type=float, default=8, help='learning rate for wage delta calculation')
 parser.add_argument('--seed', type=int, default=117, help='random seed (default: 1)')
@@ -39,7 +39,7 @@ parser.add_argument('--wl_activate', type=int, default=8)
 parser.add_argument('--wl_error', type=int, default=8)
 # Hardware Properties
 # if do not consider hardware effects, set inference=0
-parser.add_argument('--inference', type=int, default=0, help='run hardware inference simulation')
+parser.add_argument('--inference', type=int, default=1, help='run hardware inference simulation')
 parser.add_argument('--subArray', type=int, default=128, help='size of subArray (e.g. 128*128)')
 parser.add_argument('--ADCprecision', type=int, default=5, help='ADC precision (e.g. 5-bit)')
 parser.add_argument('--cellBit', type=int, default=4, help='cell precision (e.g. 4-bit/cell)')
@@ -64,7 +64,7 @@ args = parser.parse_args()
 args.logdir = os.path.join(os.path.dirname(__file__), args.logdir)
 args = make_path.makepath(args, ['log_interval', 'test_interval', 'logdir', 'epochs', 'gpu', 'ngpu', 'debug'])
 
-wandb.init(project="inference=" + "cifar10".upper(), config=args, entity='duke-tum')
+wandb.init(project="Inference", config=args, entity='duke-tum')
 wandb.run.name = args.model + ": " + wandb.run.id
 
 misc.logger.init(args.logdir, 'test_log' + current_time)
